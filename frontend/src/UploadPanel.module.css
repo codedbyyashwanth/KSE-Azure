@@ -1,0 +1,132 @@
+/* reuses the --bg / --surface / --accent tokens defined in QueryChat.module.css */
+
+
+
+.console {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto 24px;
+  font-family: var(--sans);
+  color: var(--text);
+}
+
+.indexing {
+  color: var(--text-muted);
+}
+
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.statusDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-muted);
+}
+
+.statusDot[data-active="true"] {
+  background: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.dropzone {
+  position: relative;
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  padding: 24px;
+  background: var(--surface);
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.dropzone:hover {
+  border-color: var(--accent);
+}
+
+.dropzone[data-dragging="true"] {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+}
+
+.dropzone[data-status="success"] {
+  border-style: solid;
+  border-color: rgba(232, 163, 61, 0.4);
+}
+
+.dropzone[data-status="error"] {
+  border-style: solid;
+  border-color: rgba(229, 72, 77, 0.4);
+}
+
+.hiddenInput {
+  display: none;
+}
+
+.prompt {
+  color: var(--accent);
+}
+
+.progressWrap {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.progressTrack {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--border);
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: var(--accent);
+  transition: width 0.15s ease;
+}
+
+.success {
+  color: var(--accent);
+}
+
+.errorText {
+  color: var(--danger);
+}
+
+.resetButton {
+  margin-top: 10px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+
+.resetButton:hover {
+  color: var(--text);
+}

@@ -1,0 +1,11 @@
+.page {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 20% 0%, rgba(232, 163, 61, 0.06), transparent 45%),
+    var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  padding: 64px 24px;
+}
