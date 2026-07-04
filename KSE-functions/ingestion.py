@@ -1,5 +1,6 @@
 import logging
 import io
+import json
 
 import azure.functions as func
 from pypdf import PdfReader
@@ -71,12 +72,26 @@ def extract_text(file_bytes: bytes, extension: str) -> str:
         raise ValueError(f"Unsupported file type: .{extension}")
 
 
+def make_signal(target: str, doc_name: str, **extra) -> str:
+    return json.dumps({
+        "target": target,
+        "arguments": [{"docName": doc_name, **extra}],
+    })
+
+
+@bp.generic_output_binding(
+    arg_name="signalRMessages",
+    type="signalR",
+    hubName="ingestion",
+    connectionStringSetting="AzureSignalRConnectionString",
+)
 @bp.blob_trigger(
     arg_name="myblob",
     path="documents/{name}",
-    connection="AzureWebJobsStorage"
+    connection="AzureWebJobsStorage",
+    source="EventGrid",
 )
-def blob_ingestion_trigger(myblob: func.InputStream):
+def blob_ingestion_trigger(myblob: func.InputStream, signalRMessages: func.Out[str]):
     logging.info(f"Blob trigger fired for: {myblob.name}")
 
     try:
@@ -90,10 +105,12 @@ def blob_ingestion_trigger(myblob: func.InputStream):
 
     except (PyPdfError, PackageNotFoundError) as e:
         logging.error(f"Failed to parse {myblob.name}: {e}")
+        signalRMessages.set(make_signal("docFailed", myblob.name, error=str(e)))
         return
 
     if not text.strip():
         logging.warning(f"No extractable text in {doc_name}, skipping")
+        signalRMessages.set(make_signal("docFailed", doc_name, error="No extractable text found"))
         return
 
     doc = Document(page_content=text, metadata={"doc_name": doc_name})
@@ -105,6 +122,8 @@ def blob_ingestion_trigger(myblob: func.InputStream):
         vector_store.add_documents(documents=chunks, ids=chunk_ids)
     except Exception as e:
         logging.error(f"Failed to embed/upsert chunks for {doc_name}: {e}")
+        signalRMessages.set(make_signal("docFailed", doc_name, error="Embedding or index write failed"))
         return
 
     logging.info(f"Upserted {len(chunks)} chunks for {doc_name}")
+    signalRMessages.set(make_signal("docIndexed", doc_name, chunkCount=len(chunks)))
