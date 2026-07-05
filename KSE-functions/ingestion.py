@@ -89,7 +89,6 @@ def make_signal(target: str, doc_name: str, **extra) -> str:
     arg_name="myblob",
     path="documents/{name}",
     connection="AzureWebJobsStorage",
-    source="EventGrid",
 )
 def blob_ingestion_trigger(myblob: func.InputStream, signalRMessages: func.Out[str]):
     logging.info(f"Blob trigger fired for: {myblob.name}")

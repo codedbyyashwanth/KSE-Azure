@@ -15,7 +15,7 @@ vector_store = AzureSearch(
     azure_search_endpoint=SEARCH_ENDPOINT,
     azure_search_key=SEARCH_KEY,
     index_name=SEARCH_INDEX_NAME,
-    embedding_function=embeddings.embed_query,
+    embedding_function=embeddings,
 )
 
 # used by status.py for cheap key lookups — no embeddings, no vector math
